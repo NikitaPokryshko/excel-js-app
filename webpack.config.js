@@ -7,7 +7,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const SOURCES_PATH = path.resolve(__dirname, 'src')
 const DIST_PATH = path.resolve(__dirname, 'dist')
-
+const DEV_SERVER_PORT = 3000;
 
 module.exports = (env, argv) => {
   const isProd = argv.mode === 'production';
@@ -37,6 +37,20 @@ module.exports = (env, argv) => {
         '@core': `${SOURCES_PATH}/core`,
       }
     },
+    devServer: {
+      port: DEV_SERVER_PORT,
+      // open: true => launches the browser after starting in development mode
+      open: true,
+      // hot: true => enables hot modules replacement after files update
+      hot: true,
+      // TODO: watchContentBase: check new versions and change if unnecessary (broke hot reloading in prev versions)
+      // watchContentBase: true => enables live reloading (if html is changed)
+      watchContentBase: true,
+    },
+    // TODO: target: check new versions and remove if unnecessary
+    // target: 'web' => necessary to enable hot reload (looks like a webpack bug
+    target: 'web',
+    devtool: isDev ? 'source-map' : false,
     plugins: [
       // HtmlWebpackPlugin: Creates html page with injected js and css files for you
       // With custom config gives ability to add your own html page
@@ -58,7 +72,6 @@ module.exports = (env, argv) => {
       // CleanWebpackPlugin: During rebuilds, all webpack assets that are not used anymore will be removed automatically (dist folder)
       new CleanWebpackPlugin(),
     ],
-    devtool: isDev ? 'source-map' : false,
     module: {
       rules: [
         {
