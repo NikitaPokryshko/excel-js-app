@@ -3,7 +3,8 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const ESLintPlugin = require('eslint-webpack-plugin')
 
 const SOURCES_PATH = path.resolve(__dirname, 'src')
 const DIST_PATH = path.resolve(__dirname, 'dist')
@@ -17,6 +18,38 @@ module.exports = (env, argv) => {
       ? `[name].[contenthash].bundle.${ext}`
       : `[name].bundle.${ext}`
   )
+
+  const plugins = () => {
+    const base = [
+      // HtmlWebpackPlugin: Creates html page with injected js and css files for you
+      // With custom config gives ability to add your own html page
+      new HtmlWebpackPlugin({
+        template: './index.html',
+      }),
+
+      // FaviconsWebpackPlugin: Create all necessary favicons, manifests and etc. and inject them into index.html
+      new FaviconsWebpackPlugin({
+        logo: `${SOURCES_PATH}/favicon.svg`,
+        cache: true,
+      }),
+
+      // MiniCssExtractPlugin: extracts CSS into separate files. It creates a CSS file per JS file which contains CSS
+      new MiniCssExtractPlugin({
+        filename: filename('css'),
+      }),
+
+      // CleanWebpackPlugin: During rebuilds, all webpack assets that are not used anymore will be removed automatically
+      // (dist folder)
+      new CleanWebpackPlugin(),
+    ]
+
+    if (isDev) {
+      base.push(new ESLintPlugin())
+    }
+
+    return base;
+  };
+
 
   return {
     context: SOURCES_PATH,
@@ -51,27 +84,7 @@ module.exports = (env, argv) => {
     // target: 'web' => necessary to enable hot reload (looks like a webpack bug
     target: 'web',
     devtool: isDev ? 'source-map' : false,
-    plugins: [
-      // HtmlWebpackPlugin: Creates html page with injected js and css files for you
-      // With custom config gives ability to add your own html page
-      new HtmlWebpackPlugin({
-        template: './index.html',
-      }),
-
-      // FaviconsWebpackPlugin: Create all necessary favicons, manifests and etc. and inject them into index.html
-      new FaviconsWebpackPlugin({
-        logo: `${SOURCES_PATH}/favicon.svg`,
-        cache: true,
-      }),
-
-      // MiniCssExtractPlugin: extracts CSS into separate files. It creates a CSS file per JS file which contains CSS
-      new MiniCssExtractPlugin({
-        filename: filename('css'),
-      }),
-
-      // CleanWebpackPlugin: During rebuilds, all webpack assets that are not used anymore will be removed automatically (dist folder)
-      new CleanWebpackPlugin(),
-    ],
+    plugins: plugins(),
     module: {
       rules: [
         {
@@ -90,7 +103,7 @@ module.exports = (env, argv) => {
           test: /\.m?js$/,
           exclude: /node_modules/,
           use: {
-            loader: "babel-loader",
+            loader: 'babel-loader',
             options: {
               presets: ['@babel/preset-env']
             }

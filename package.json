@@ -6,9 +6,12 @@
   "scripts": {
     "start": "webpack serve --mode=development",
     "build": "webpack --mode=production",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "eslint": "./node_modules/.bin/eslint src webpack.config.js"
   },
-  "browserslist": "> 0.25%, not dead",
+  "browserslist": [
+    "> 0.25%",
+    "not dead"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/NikitaPokryshko/excel-js-app.git"
@@ -22,10 +25,14 @@
   "homepage": "https://github.com/NikitaPokryshko/excel-js-app#readme",
   "devDependencies": {
     "@babel/core": "^7.13.15",
+    "@babel/eslint-parser": "^7.13.14",
     "@babel/preset-env": "^7.13.15",
     "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
     "css-loader": "^5.2.1",
+    "eslint": "^7.24.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-webpack-plugin": "^2.5.3",
     "favicons": "^6.2.1",
     "favicons-webpack-plugin": "^5.0.2",
     "html-webpack-plugin": "^5.3.1",
